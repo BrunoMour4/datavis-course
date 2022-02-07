@@ -16,379 +16,1072 @@
     <script type="text/javascript">
         var opts = {"actions": {export: false, source: false, editor: false}};
       var yourVlSpec = {
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "config": {
-    "view": {"stroke": null},
-    "background": "#333",
-    "title": {"color": "#fff", "subtitleColor": "#fff"},
-    "style": {"guide-label": {"fill": "#fff"}, "guide-title": {"fill": "#fff"}},
-    "axis": {"domainColor": "#fff", "gridColor": "#888", "tickColor": "#fff"}
-  },
-  "title": {"text": "Acidentes em Barcelona - 2017", "fontSize": 24},
-  "data": {
-        "name": "acidentes",
-        "url": "https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
-        "format": {"type": "json", "parse": {"date": "date", "Hour": "number", "MildInjuries":"number", "SeriousInjuries":"number", "Victims":"number", "VehiclesInvolved":"number"}}
+   "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+   "config":{
+      "view":{
+         "stroke":null
       },
-      "transform": [
-        {"calculate": "datum.NeighborhoodName", "as": "Nome"},
-        {
-          "calculate": "datetime(year(datum.date), month(datum.date), date(datum.date))",
-          "as": "dia"
-        },
-        {
-          "joinaggregate": [{"op": "count", "field": "Id", "as": "Taxa"}],
-          "groupby": ["NeighborhoodName"]
-        },
-        {
-          "joinaggregate": [{"op": "count", "field": "Id", "as": "DailyTaxa"}],
-          "groupby": ["Day", "Month"]
-        }
-      ],
-      "hconcat": [
-        {
-          "vconcat": [
-    {
-      "concat": [
-    {
-      "data": {
-        "name": "barris",
-        "url": "https://raw.githubusercontent.com/BrunoMour4/barcelona/main/barris2.json",
-        "format": {"type": "topojson", "feature": "barris"}
+      "background":"#333",
+      "title":{
+         "color":"#fff",
+         "subtitleColor":"#fff"
       },
-      "transform": [
-        {"calculate": "datum.properties.NOM", "as": "Nome"},
-        {"calculate": "datum.properties.TaxaAcidentes", "as": "Taxa"},
-        {"calculate": "datum.properties.HEX_COLOR7", "as": "Cor"}
-      ],
-      "projection": {"type": "mercator"},
-      "height": 400,
-      "width": 400,
-      "params": [
-        {
-          "name": "highlight",
-          "select": {
-            "type": "point",
-            "on": "mouseover",
-            "clear": "mouseout",
-            "fields": ["Nome"],
-            "toggle": false
-          }
-        },
-        {
-          "name": "clicked",
-          "select": {
-            "type": "point",
-            "fields": ["Nome", "Taxa", "Cor"],
-            "toggle": false
-          }
-        }
-      ],
-      "mark": "geoshape",
-      "encoding": {
-        "fillOpacity": {
-          "condition": {"param": "highlight", "value": 1},
-          "value": 0.3
-        },
-        "fill": {
-          "condition": [
-            {"param": "clicked", "empty": false, "value": "#6a51a3"},
-            {"param": "highlight", "empty": false, "value": "#6a51a3"}
-          ],
-          "field": "Taxa",
-          "type": "quantitative",
-          "scale": {
-            "scheme": {"name": "redpurple", "count": 10},
-            "type": "quantize"
-          },
-          "legend": {
-            "direction": "horizontal",
-            "orient": "none",
-            "title": "Total de Acidentes - 2017",
-            "titleFontSize": 14,
-            "labelFontSize": 12,
-            "legendY": -22
-          }
-        },
-        "stroke": {"value": "#fff"},
-        "strokeWidth": {"value": 1},
-        "tooltip": [
-          {"field": "Nome", "type": "nominal", "title": "Bairro"},
-          {"field": "Taxa", "type": "quantitative", "title": "Total"}
-        ]
+      "style":{
+         "guide-label":{
+            "fill":"#fff"
+         },
+         "guide-title":{
+            "fill":"#fff"
+         }
+      },
+      "axis":{
+         "domainColor":"#fff",
+         "gridColor":"#888",
+         "tickColor":"#fff"
       }
-    },
-    {
-      "vconcat": [
-        {"hconcat":[
-        {
-          "params": [
+   },
+   "title":{
+      "text":"Acidentes em Barcelona - 2017",
+      "fontSize":24
+   },
+   "vconcat":[
+      {
+         "hconcat":[
             {
-              "name": "highlight2",
-              "select": {
-                "type": "point",
-                "on": "mouseover",
-                "clear": "mouseout",
-                "fields": ["Month"],
-                "toggle": false
-              }
-            },
-            {
-              "name": "clicked2",
-              "select": {"type": "point", "fields": ["Month"], "toggle": false}
-            }
-          ],
-           "transform": [
-        {"filter": {"param": "clicked"}},
-        {"filter": {"param": "clicked3"}}
-      ],
-          "height": 200,
-          "width": 400,
-          "title": {"text": {"expr": "clicked.Nome"}},
-          "mark": "bar",
-          "encoding": {
-            "x": {
-              "field": "Month",
-              "type": "ordinal",
-              "sort": "-y",
-              "title": "Mês", 
-              "axis": {"labelExpr": "slice(datum.label, 0,3)", "labelAngle": 0, "labelFontSize": 14, "titleFontSize":18}
-            },
-            "y": {
-              "field": "Id",
-              "aggregate": "count",
-              "title": "Número de Ocorrências",
-              "axis": {"labelFontSize": 14, "titleFontSize": 18}
-            },
-            "stroke": {"value": "#fff"},
-            "strokeWidth": {"value": 1.8},
-            "tooltip": {"field": "Id", "aggregate": "distinct"},
-            "fill": {
-              "condition": [{"test": {"not": "clicked.Nome"}, "value": "grey"}],
-              "value": {"expr": "clicked.Cor"}
-            },
-            "fillOpacity": {
-              "condition": {"param": "highlight2", "value": 1},
-              "value": 0.3
-            }
-          }
-        },
-        {
-          "transform": [{
-          "joinaggregate": [{"op": "count", "field": "Id", "as": "ValorTotal"}]
-
-        },
-        {
-          "joinaggregate": [{"op": "count", "field": "Id", "as": "TotalPeriodo"}],
-          "groupby": ["PartOfTheDay"]
-
-        },
-        {
-          "calculate": "datum.TotalPeriodo/datum.ValorTotal*100", "as": "Percentual"
-        },
-        {
-          "filter": {"param": "clicked"}
-        },
-        {
-          "filter": {"param": "clicked2"}
-        }],
-        "params": [
-          {
-              "name": "highlight3",
-              "select": {
-                "type": "point",
-                "on": "mouseover",
-                "clear": "mouseout",
-                "toggle": false
-              }
-            },
-             {
-          "name": "clicked3",
-          "select": {
-            "type": "point",
-            "fields": ["PartOfTheDay"],
-            "toggle": false
-          }
-        }
-        ],
-          "mark": {"type": "arc", "innerRadius": 50},
-          "center":true,
-          "width": 400,
-          "title": {"text": "Período do Dia", "dy": -14, "fontSize": 16},
-          "encoding": {
-            "theta": {"field": "PartOfTheDay", "aggregate": "count"},
-            "fillOpacity": {
-              "condition": {"param": "highlight3", "value": 1},
-              "value": 0.3
-            },
-            "fill": {
-              "field": "PartOfTheDay", 
-              "type": "nominal", 
-              "scale": {"scheme": "bluepurple"}, 
-              "legend":{
-                "legendX": 720,
-                "orient": "none", 
-                "title": null, 
-                "direction": "vertical", 
-                "labelFontSize": 12,
-                "labelExpr": "if(datum.value === 'Morning', 'Manhã (6h-14h)', if(datum.value === 'Afternoon', 'Tarde (14h-22h)', if(datum.value === 'Night', 'Noite (22h-6h)', datum.value)))"
-                }
-              },
-              "tooltip":[{"field": "Percentual", "format": ".2f", "title": "Percentual"}, {"field": "TotalPeriodo", "title": "Total"}], 
-              "stroke": {"value": "white"},
-              "strokeWidth": {"value": 2}
-              
-
-          }
-        }
-       
-        ]
-        },
-        {
-          "hconcat": [
-            {
-              "transform": [{"filter": {"param": "clicked2"}}],
-          "height": 200,
-          "width": 400,
-          "mark": "bar",
-          "encoding": {
-            "y": {
-              "field": "Weekday",
-              "type": "ordinal",
-              "title": "Dia da Semana",
-              "sort": "-x",
-              "axis": {"labelFontSize": 14, "titleFontSize": 18,
-              "labelExpr": "if(datum.value === 'Friday', 'Sexta', if(datum.value === 'Tuesday', 'Terça', if(datum.value === 'Thursday', 'Quinta', if(datum.value === 'Wednesday', 'Quarta', if(datum.value === 'Monday', 'Segunda', if(datum.value === 'Saturday', 'Sábado', if(datum.value === 'Sunday', 'Domingo', datum.value)))))))"}
-            },
-            "x": {
-              "field": "Id",
-              "aggregate": "count",
-              "title": "Número de Ocorrências",
-              "axis": {"labelFontSize": 14, "titleFontSize": 18}
-            },
-            "stroke": {"value": "#fff"},
-            "strokeWidth": {"value": 1.8},
-            "tooltip": {"field": "Id", "aggregate": "distinct"},
-            "fill": {
-              "condition": [{"test": {"not": "clicked.Nome"}, "value": "grey"}],
-              "value": {"expr": "clicked.Cor"}
-            }
-          }
+               "data":{
+                  "name":"barris",
+                  "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/barris2.json",
+                  "format":{
+                     "type":"topojson",
+                     "feature":"barris"
+                  }
+               },
+               "transform":[
+                  {
+                     "calculate":"datum.properties.NOM",
+                     "as":"Nome"
+                  },
+                  {
+                     "calculate":"datum.properties.TaxaAcidentes",
+                     "as":"Taxa"
+                  },
+                  {
+                     "calculate":"datum.properties.HEX_COLOR7",
+                     "as":"Cor"
+                  }
+               ],
+               "projection":{
+                  "type":"mercator"
+               },
+               "height":400,
+               "width":400,
+               "params":[
+                  {
+                     "name":"highlight",
+                     "select":{
+                        "type":"point",
+                        "on":"mouseover",
+                        "clear":"mouseout",
+                        "fields":[
+                           "Nome"
+                        ],
+                        "toggle":false
+                     }
+                  },
+                  {
+                     "name":"clicked",
+                     "select":{
+                        "type":"point",
+                        "fields":[
+                           "Nome",
+                           "Taxa",
+                           "Cor"
+                        ],
+                        "toggle":false
+                     }
+                  }
+               ],
+               "mark":"geoshape",
+               "encoding":{
+                  "fillOpacity":{
+                     "condition":{
+                        "param":"highlight",
+                        "value":1
+                     },
+                     "value":0.3
+                  },
+                  "fill":{
+                     "condition":[
+                        {
+                           "param":"clicked",
+                           "empty":false,
+                           "value":"#6a51a3"
+                        },
+                        {
+                           "param":"highlight",
+                           "empty":false,
+                           "value":"#6a51a3"
+                        }
+                     ],
+                     "field":"Taxa",
+                     "type":"quantitative",
+                     "scale":{
+                        "scheme":{
+                           "name":"redpurple",
+                           "count":10
+                        },
+                        "type":"quantize"
+                     },
+                     "legend":{
+                        "direction":"horizontal",
+                        "orient":"none",
+                        "title":"Total de Acidentes - 2017",
+                        "titleFontSize":14,
+                        "labelFontSize":12,
+                        "legendY":-22
+                     }
+                  },
+                  "stroke":{
+                     "value":"#fff"
+                  },
+                  "strokeWidth":{
+                     "value":1
+                  },
+                  "tooltip":[
+                     {
+                        "field":"Nome",
+                        "type":"nominal",
+                        "title":"Bairro"
+                     },
+                     {
+                        "field":"Taxa",
+                        "type":"quantitative",
+                        "title":"Total"
+                     }
+                  ]
+               }
             },
             {
-          "height": 220, "width": 400,
-          "mark": "bar",
-          "title": {"text": "Distribuição de Acidentes por Hora", "fontSize": 16},
-          "encoding": {
-            "x": {
-              "field": "Hour",
-              "axis": {
-                "labelAngle": 0,
-                "labelFontSize": 12,
-                "title": "Hora",
-                "titleFontSize": 18,
-                "labelExpr": "if(datum.value === 6, 'M', datum.value)"
-              }
-            },
-            "y": {
-              "aggregate": "count",
-              "axis": {
-                "labelAngle": 0,
-                "labelFontSize": 12,
-                "title": "Hora",
-                "titleFontSize": 18
-              }
-              },
-            "fill": {"value": "#6a51a3"},
-            "tooltip": [{"field": "date", "title": "Hora do Dia", "formatType": "time", "timeUnit":"hours"},
-                        {"field": "Hour", "aggregate": "count", "title": "Frequência"}]
-          }
-
-        }
-
-          ]
-        }
-      ]
-    }
-  ]
-
-    },
-    {
-      
-      "hconcat": [
-        {
-          "transform": [
-        {"filter": {"param": "clicked"}}, {"filter": {"param": "clicked2"}}
-      ],
-          "title": {"text": "Número de Acidentes por Dia", "fontSize":16},
-          "height": 220, "width": 800,
-          "mark": {"type": "line", "point": true},
-          "encoding": {
-            "x": {"field": "dia", "scale": {"type": "time"}, "title": "Dia do Ano", "axis": {"labelFontSize": 12, "titleFontSize": 18}},
-            "y": {"field": "Id", "aggregate":"count", "type": "quantitative",  "title": "Acidentes", "axis": {"labelFontSize": 12, "titleFontSize": 18}},
-            "stroke": {"value": "#e8e8e8"}, 
-            "tooltip": [{"field": "Id", "aggregate":"count",
-             "title": "Acidentes"}, {"field": "dia", "title": "Data", "type": "temporal", "format": "%B %d"},{"field": "VehiclesInvolved", "aggregate": "sum", "title": "Veículos Envolvidos"}]
-          }
-        },
-        {
-          "transform": [
-            {"filter": {"param": "clicked"}}
-          ],
-          "title": {"text": "Frequência de Acidentes por Hora/Mês", "fontSize": 16, "dy": -12},
-          "mark": "rect",
-          "width": 400,
-          "encoding": {
-            "x": {
-            "field": "Hour",
-            "axis": {
-                "labelAngle": 0,
-                "labelFontSize": 12,
-                "title": "Hora",
-                "titleFontSize": 18
-              }
-          },
-          "y": {
-            "field": "Month", "sort": {"field": "monthIndex", "order":"descending"}, "title": "Mês", "axis":{
-              "labelFontSize": 12, "titleFontSize": 18
+               "vconcat":[
+                  {
+                     "title":{
+                        "text":"Acidentes por Mês",
+                        "dx":150,
+                        "fontSize":18
+                     },
+                     "hconcat":[
+                        {
+                           "data":{
+                              "name":"acidentes",
+                              "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
+                              "format":{
+                                 "type":"json",
+                                 "parse":{
+                                    "date":"date",
+                                    "Hour":"number",
+                                    "MildInjuries":"number",
+                                    "SeriousInjuries":"number",
+                                    "Victims":"number",
+                                    "VehiclesInvolved":"number"
+                                 }
+                              }
+                           },
+                           "transform":[
+                              {
+                                 "calculate":"datum.NeighborhoodName",
+                                 "as":"Nome"
+                              },
+                              {
+                                 "calculate":"datetime(year(datum.date), month(datum.date), date(datum.date))",
+                                 "as":"dia"
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"Taxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "NeighborhoodName"
+                                 ]
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"DailyTaxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "Day",
+                                    "Month"
+                                 ]
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked3"
+                                 }
+                              }
+                           ],
+                           "params":[
+                              {
+                                 "name":"highlight2",
+                                 "select":{
+                                    "type":"point",
+                                    "on":"mouseover",
+                                    "clear":"mouseout",
+                                    "fields":[
+                                       "Month"
+                                    ],
+                                    "toggle":false
+                                 }
+                              },
+                              {
+                                 "name":"clicked2",
+                                 "select":{
+                                    "type":"point",
+                                    "fields":[
+                                       "Month"
+                                    ],
+                                    "toggle":false
+                                 }
+                              }
+                           ],
+                           "height":200,
+                           "width":400,
+                           "title":{
+                              "text":{
+                                 "expr":"clicked.Nome"
+                              }
+                           },
+                           "mark":"bar",
+                           "encoding":{
+                              "x":{
+                                 "field":"Month",
+                                 "type":"ordinal",
+                                 "sort":"-y",
+                                 "title":"Mês",
+                                 "axis":{
+                                    "labelExpr":"slice(datum.label, 0,3)",
+                                    "labelAngle":0,
+                                    "labelFontSize":14,
+                                    "titleFontSize":18
+                                 }
+                              },
+                              "y":{
+                                 "field":"Id",
+                                 "aggregate":"count",
+                                 "title":"Número de Ocorrências",
+                                 "axis":{
+                                    "labelFontSize":14,
+                                    "titleFontSize":18
+                                 }
+                              },
+                              "stroke":{
+                                 "value":"#fff"
+                              },
+                              "strokeWidth":{
+                                 "value":1.8
+                              },
+                              "tooltip":{
+                                 "field":"Id",
+                                 "aggregate":"distinct"
+                              },
+                              "fill":{
+                                 "condition":[
+                                    {
+                                       "test":{
+                                          "not":"clicked.Nome"
+                                       },
+                                       "value":"grey"
+                                    }
+                                 ],
+                                 "value":{
+                                    "expr":"clicked.Cor"
+                                 }
+                              },
+                              "fillOpacity":{
+                                 "condition":{
+                                    "param":"highlight2",
+                                    "value":1
+                                 },
+                                 "value":0.3
+                              }
+                           }
+                        },
+                        {
+                           "data":{
+                              "name":"acidentes2",
+                              "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
+                              "format":{
+                                 "type":"json",
+                                 "parse":{
+                                    "date":"date",
+                                    "Hour":"number"
+                                 }
+                              }
+                           },
+                           "transform":[
+                              {
+                                 "calculate":"datum.NeighborhoodName",
+                                 "as":"Nome"
+                              },
+                              {
+                                 "calculate":"datetime(year(datum.date), month(datum.date), date(datum.date))",
+                                 "as":"dia"
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"Taxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "NeighborhoodName"
+                                 ]
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"DailyTaxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "Hour",
+                                    "Day",
+                                    "Month"
+                                 ]
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked2"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked4"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked5"
+                                 }
+                              }
+                           ],
+                           "vconcat":[
+                              {
+                                 "transform":[
+                                    {
+                                       "joinaggregate":[
+                                          {
+                                             "op":"count",
+                                             "field":"Id",
+                                             "as":"ValorTotal"
+                                          }
+                                       ]
+                                    },
+                                    {
+                                       "joinaggregate":[
+                                          {
+                                             "op":"count",
+                                             "field":"Id",
+                                             "as":"TotalPeriodo"
+                                          }
+                                       ],
+                                       "groupby":[
+                                          "PartOfTheDay"
+                                       ]
+                                    },
+                                    {
+                                       "calculate":"datum.TotalPeriodo/datum.ValorTotal*100",
+                                       "as":"Percentual"
+                                    },
+                                    {
+                                       "filter":{
+                                          "param":"clicked"
+                                       }
+                                    },
+                                    {
+                                       "filter":{
+                                          "param":"clicked2"
+                                       }
+                                    },
+                                    {
+                                       "filter":{
+                                          "param":"clicked4"
+                                       }
+                                    },
+                                    {
+                                       "filter":{
+                                          "param":"clicked5"
+                                       }
+                                    }
+                                 ],
+                                 "params":[
+                                    {
+                                       "name":"highlight3",
+                                       "select":{
+                                          "type":"point",
+                                          "on":"mouseover",
+                                          "clear":"mouseout",
+                                          "toggle":false
+                                       }
+                                    },
+                                    {
+                                       "name":"clicked3",
+                                       "select":{
+                                          "type":"point",
+                                          "fields":[
+                                             "PartOfTheDay"
+                                          ],
+                                          "toggle":false
+                                       }
+                                    }
+                                 ],
+                                 "mark":{
+                                    "type":"arc",
+                                    "innerRadius":50
+                                 },
+                                 "center":true,
+                                 "width":400,
+                                 "title":{
+                                    "text":"Período do Dia",
+                                    "dy":-14,
+                                    "fontSize":16
+                                 },
+                                 "encoding":{
+                                    "theta":{
+                                       "field":"PartOfTheDay",
+                                       "aggregate":"count"
+                                    },
+                                    "fillOpacity":{
+                                       "condition":{
+                                          "param":"highlight3",
+                                          "value":1
+                                       },
+                                       "value":0.3
+                                    },
+                                    "fill":{
+                                       "field":"PartOfTheDay",
+                                       "type":"nominal",
+                                       "scale":{
+                                          "scheme":"bluepurple"
+                                       },
+                                       "legend":{
+                                          "legendX":720,
+                                          "orient":"none",
+                                          "title":null,
+                                          "direction":"vertical",
+                                          "labelFontSize":12,
+                                          "labelExpr":"if(datum.value === 'Morning', 'Manhã (6h-14h)', if(datum.value === 'Afternoon', 'Tarde (14h-22h)', if(datum.value === 'Night', 'Noite (22h-6h)', datum.value)))"
+                                       }
+                                    },
+                                    "tooltip":[
+                                       {
+                                          "field":"Percentual",
+                                          "format":".2f",
+                                          "title":"Percentual"
+                                       },
+                                       {
+                                          "field":"TotalPeriodo",
+                                          "title":"Total"
+                                       }
+                                    ],
+                                    "stroke":{
+                                       "value":"white"
+                                    },
+                                    "strokeWidth":{
+                                       "value":2
+                                    }
+                                 }
+                              }
+                           ]
+                        }
+                     ]
+                  },
+                  {
+                     "hconcat":[
+                        {
+                           "data":{
+                              "name":"acidentes",
+                              "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
+                              "format":{
+                                 "type":"json",
+                                 "parse":{
+                                    "date":"date",
+                                    "Hour":"number"
+                                 }
+                              }
+                           },
+                           "transform":[
+                              {
+                                 "calculate":"datum.NeighborhoodName",
+                                 "as":"Nome"
+                              },
+                              {
+                                 "calculate":"datetime(year(datum.date), month(datum.date), date(datum.date))",
+                                 "as":"dia"
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"Taxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "NeighborhoodName"
+                                 ]
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"DailyTaxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "Hour",
+                                    "Day",
+                                    "Month"
+                                 ]
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked"
+                                 }
+                              }
+                           ],
+                           "title":{
+                              "text":"Acidentes por Dia da Semana",
+                              "anchor":"middle",
+                              "align":"center",
+                              "fontSize":16,
+                              "dy":-10
+                           },
+                           "vconcat":[
+                              {
+                                 "transform":[
+                                    {
+                                       "filter":{
+                                          "param":"clicked2"
+                                       }
+                                    }
+                                 ],
+                                 "params":[
+                                    {
+                                       "name":"highlight4",
+                                       "select":{
+                                          "type":"point",
+                                          "on":"mouseover",
+                                          "clear":"mouseout",
+                                          "toggle":false
+                                       }
+                                    },
+                                    {
+                                       "name":"clicked4",
+                                       "select":{
+                                          "type":"point",
+                                          "fields":[
+                                             "Weekday"
+                                          ],
+                                          "toggle":false
+                                       }
+                                    }
+                                 ],
+                                 "height":200,
+                                 "width":400,
+                                 "mark":"bar",
+                                 "encoding":{
+                                    "y":{
+                                       "field":"Weekday",
+                                       "type":"ordinal",
+                                       "title":"Dia da Semana",
+                                       "sort":"-x",
+                                       "axis":{
+                                          "labelFontSize":14,
+                                          "titleFontSize":18,
+                                          "labelExpr":"if(datum.value === 'Friday', 'Sexta', if(datum.value === 'Tuesday', 'Terça', if(datum.value === 'Thursday', 'Quinta', if(datum.value === 'Wednesday', 'Quarta', if(datum.value === 'Monday', 'Segunda', if(datum.value === 'Saturday', 'Sábado', if(datum.value === 'Sunday', 'Domingo', datum.value)))))))"
+                                       }
+                                    },
+                                    "x":{
+                                       "field":"Id",
+                                       "aggregate":"count",
+                                       "title":"Número de Ocorrências",
+                                       "axis":{
+                                          "labelFontSize":14,
+                                          "titleFontSize":18
+                                       }
+                                    },
+                                    "stroke":{
+                                       "value":"#fff"
+                                    },
+                                    "strokeWidth":{
+                                       "value":1.8
+                                    },
+                                    "tooltip":{
+                                       "field":"Id",
+                                       "aggregate":"distinct"
+                                    },
+                                    "fill":{
+                                       "condition":[
+                                          {
+                                             "test":{
+                                                "not":"clicked.Nome"
+                                             },
+                                             "value":"grey"
+                                          }
+                                       ],
+                                       "value":{
+                                          "expr":"clicked.Cor"
+                                       }
+                                    },
+                                    "fillOpacity":{
+                                       "condition":[
+                                          {
+                                             "param":"highlight4",
+                                             "value":1
+                                          }
+                                       ],
+                                       "value":0.3
+                                    }
+                                 }
+                              }
+                           ]
+                        },
+                        {
+                           "data":{
+                              "name":"acidentes4",
+                              "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
+                              "format":{
+                                 "type":"json",
+                                 "parse":{
+                                    "date":"date",
+                                    "Hour":"number",
+                                    "MildInjuries":"number",
+                                    "SeriousInjuries":"number",
+                                    "Victims":"number",
+                                    "VehiclesInvolved":"number"
+                                 }
+                              }
+                           },
+                           "transform":[
+                              {
+                                 "calculate":"datum.NeighborhoodName",
+                                 "as":"Nome"
+                              },
+                              {
+                                 "calculate":"datetime(year(datum.date), month(datum.date), date(datum.date))",
+                                 "as":"dia"
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"Taxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "NeighborhoodName"
+                                 ]
+                              },
+                              {
+                                 "joinaggregate":[
+                                    {
+                                       "op":"count",
+                                       "field":"Id",
+                                       "as":"DailyTaxa"
+                                    }
+                                 ],
+                                 "groupby":[
+                                    "Day",
+                                    "Month"
+                                 ]
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked2"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked4"
+                                 }
+                              },
+                              {
+                                 "filter":{
+                                    "param":"clicked5"
+                                 }
+                              }
+                           ],
+                           "params":[
+                              {
+                                 "name":"highlight6",
+                                 "select":{
+                                    "type":"point",
+                                    "on":"mouseover",
+                                    "clear":"mouseout",
+                                    "toggle":false
+                                 }
+                              }
+                           ],
+                           "height":220,
+                           "width":400,
+                           "mark":"bar",
+                           "title":{
+                              "text":"Distribuição de Acidentes por Hora",
+                              "fontSize":16
+                           },
+                           "encoding":{
+                              "x":{
+                                 "field":"Hour",
+                                 "axis":{
+                                    "labelAngle":0,
+                                    "labelFontSize":12,
+                                    "title":"Hora",
+                                    "titleFontSize":18,
+                                    "labelExpr":"if(datum.value === 6, 'M', if(datum.value === 14, 'T', if(datum.value === 22, 'N', datum.value)))"
+                                 }
+                              },
+                              "y":{
+                                 "aggregate":"count",
+                                 "axis":{
+                                    "labelAngle":0,
+                                    "labelFontSize":12,
+                                    "title":"Total",
+                                    "titleFontSize":18
+                                 }
+                              },
+                              "fill":{
+                                 "value":"#6a51a3"
+                              },
+                              "fillOpacity":{
+                                 "condition":[
+                                    {
+                                       "param":"highlight6",
+                                       "value":1
+                                    }
+                                 ],
+                                 "value":0.3
+                              },
+                              "tooltip":[
+                                 {
+                                    "field":"date",
+                                    "title":"Hora do Dia",
+                                    "formatType":"time",
+                                    "timeUnit":"hours"
+                                 },
+                                 {
+                                    "field":"Hour",
+                                    "aggregate":"count",
+                                    "title":"Frequência"
+                                 }
+                              ]
+                           }
+                        }
+                     ]
+                  }
+               ]
             }
-          },
-          "fill": {
-            "scale": {"scheme": "purples", "clamp":true},
-            "field": "Hour", "aggregate":"count",
-            "legend": {
-              "direction": "vertical",
-              "orient": "none",
-              "legendX": 1320,
-              "legendY": 580,
-              "title": "Total"
-            }
-          },
-          "strokeWidth": {"value": 1},"stroke": {"value":"grey"},
-          "tooltip":[
-            {"field": "Month", "title": "Mês"},
-            {"field": "date", "title": "Hora do Dia", "formatType": "time", "timeUnit":"hours"},
+         ]
+      },
+      {
+         "hconcat":[
             {
-              "field": "Hour", "aggregate": "count", "title": "Total"
+               "data":{
+                  "name":"acidentes5",
+                  "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
+                  "format":{
+                     "type":"json",
+                     "parse":{
+                        "date":"date",
+                        "Hour":"number",
+                        "MildInjuries":"number",
+                        "SeriousInjuries":"number",
+                        "Victims":"number",
+                        "VehiclesInvolved":"number"
+                     }
+                  }
+               },
+               "transform":[
+                  {
+                     "calculate":"datum.NeighborhoodName",
+                     "as":"Nome"
+                  },
+                  {
+                     "calculate":"datetime(year(datum.date), month(datum.date), date(datum.date))",
+                     "as":"dia"
+                  },
+                  {
+                     "joinaggregate":[
+                        {
+                           "op":"count",
+                           "field":"Id",
+                           "as":"Taxa"
+                        }
+                     ],
+                     "groupby":[
+                        "NeighborhoodName"
+                     ]
+                  },
+                  {
+                     "joinaggregate":[
+                        {
+                           "op":"count",
+                           "field":"Id",
+                           "as":"DailyTaxa"
+                        }
+                     ],
+                     "groupby":[
+                        "Day",
+                        "Month"
+                     ]
+                  },
+                  {
+                     "filter":{
+                        "param":"clicked"
+                     }
+                  },
+                  {
+                     "filter":{
+                        "param":"clicked2"
+                     }
+                  },
+                  {
+                     "filter":{
+                        "param":"clicked4"
+                     }
+                  }
+               ],
+               "params":[
+                  {
+                     "name":"highlight5",
+                     "select":{
+                        "type":"point",
+                        "on":"mouseover",
+                        "clear":"mouseout",
+                        "toggle":false
+                     }
+                  },
+                  {
+                     "name":"clicked5",
+                     "select":{
+                        "type":"point",
+                        "fields":[
+                           "dia"
+                        ],
+                        "toggle":false
+                     }
+                  }
+               ],
+               "title":{
+                  "text":"Número de Acidentes por Dia",
+                  "fontSize":16
+               },
+               "height":220,
+               "width":800,
+               "mark":{
+                  "type":"line",
+                  "point":true
+               },
+               "encoding":{
+                  "x":{
+                     "field":"dia",
+                     "scale":{
+                        "type":"time"
+                     },
+                     "title":"Dia do Ano",
+                     "axis":{
+                        "labelFontSize":12,
+                        "titleFontSize":18
+                     }
+                  },
+                  "y":{
+                     "field":"Id",
+                     "aggregate":"count",
+                     "type":"quantitative",
+                     "title":"Acidentes",
+                     "axis":{
+                        "labelFontSize":12,
+                        "titleFontSize":18
+                     }
+                  },
+                  "stroke":{
+                     "value":"#e8e8e8"
+                  },
+                  "tooltip":[
+                     {
+                        "field":"Id",
+                        "aggregate":"count",
+                        "title":"Acidentes"
+                     },
+                     {
+                        "field":"dia",
+                        "title":"Data",
+                        "type":"temporal",
+                        "format":"%B %d"
+                     },
+                     {
+                        "field":"VehiclesInvolved",
+                        "aggregate":"sum",
+                        "title":"Veículos Envolvidos"
+                     }
+                  ]
+               }
+            },
+            {
+               "data":{
+                  "name":"acidentes5",
+                  "url":"https://raw.githubusercontent.com/BrunoMour4/barcelona/main/acidentesHexDatev2.json",
+                  "format":{
+                     "type":"json",
+                     "parse":{
+                        "date":"date",
+                        "Hour":"number",
+                        "MildInjuries":"number",
+                        "SeriousInjuries":"number",
+                        "Victims":"number",
+                        "VehiclesInvolved":"number"
+                     }
+                  }
+               },
+               "transform":[
+                  {
+                     "calculate":"datum.NeighborhoodName",
+                     "as":"Nome"
+                  },
+                  {
+                     "calculate":"datetime(year(datum.date), month(datum.date), date(datum.date))",
+                     "as":"dia"
+                  },
+                  {
+                     "joinaggregate":[
+                        {
+                           "op":"count",
+                           "field":"Id",
+                           "as":"Taxa"
+                        }
+                     ],
+                     "groupby":[
+                        "NeighborhoodName"
+                     ]
+                  },
+                  {
+                     "joinaggregate":[
+                        {
+                           "op":"count",
+                           "field":"Id",
+                           "as":"DailyTaxa"
+                        }
+                     ],
+                     "groupby":[
+                        "Day",
+                        "Month"
+                     ]
+                  },
+                  {
+                     "filter":{
+                        "param":"clicked"
+                     }
+                  }
+               ],
+               "title":{
+                  "text":"Frequência de Acidentes por Hora/Mês",
+                  "fontSize":16,
+                  "dy":-12
+               },
+               "mark":"rect",
+               "width":400,
+               "encoding":{
+                  "x":{
+                     "field":"Hour",
+                     "axis":{
+                        "labelAngle":0,
+                        "labelFontSize":12,
+                        "title":"Hora",
+                        "titleFontSize":18
+                     }
+                  },
+                  "y":{
+                     "field":"Month",
+                     "sort":{
+                        "field":"monthIndex",
+                        "order":"descending"
+                     },
+                     "title":"Mês",
+                     "axis":{
+                        "labelFontSize":12,
+                        "titleFontSize":18
+                     }
+                  },
+                  "fill":{
+                     "scale":{
+                        "scheme":"purples",
+                        "clamp":true
+                     },
+                     "field":"Hour",
+                     "aggregate":"count",
+                     "legend":{
+                        "direction":"vertical",
+                        "orient":"none",
+                        "legendX":1320,
+                        "legendY":580,
+                        "title":"Total"
+                     }
+                  },
+                  "strokeWidth":{
+                     "value":1
+                  },
+                  "stroke":{
+                     "value":"grey"
+                  },
+                  "tooltip":[
+                     {
+                        "field":"Month",
+                        "title":"Mês"
+                     },
+                     {
+                        "field":"date",
+                        "title":"Hora do Dia",
+                        "formatType":"time",
+                        "timeUnit":"hours"
+                     },
+                     {
+                        "field":"Hour",
+                        "aggregate":"count",
+                        "title":"Total"
+                     }
+                  ]
+               }
             }
-
-          ]
-          }
-        }
-        
-      ]
-
-    }
-
-
-  ]
-        }
-
-
-      ]
-  
-  
-  
+         ]
+      }
+   ]
 };            
       vegaEmbed('#vis', yourVlSpec);
     </script>
