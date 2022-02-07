@@ -2,10 +2,17 @@
 <meta charset="utf-8">
 <html>
     <head>
-    <title>Título da Página</title> 
+    <title>Título da Página</title>
+        <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     </head>
     <body>
-        <h1>Título</h1>
-        <p>Esse é um parágrafo.</p> 
+        <div id="vis"></div>
+        <script>  
+            const spec = "visualization.json"
+            var opts = {"actions": {export: false, source: false, editor: false}};
+            vega.embed('#vis', spec, opts);
+        </script>
     </body>
 </html>
